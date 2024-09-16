@@ -37,17 +37,25 @@ if (level) {
     changeLevelBtn.classList.remove('hidden');
 }
 
-// Save level
+// Update the level validation
 saveLevelBtn.addEventListener('click', () => {
     level = parseInt(levelInput.value);
-    if (level >= 1 && level <= 12) {
+    if (level >= 1 && level <= 10) {
         localStorage.setItem('level', level);
         currentLevelDisplay.textContent = `Current Level: ${level}`;
         levelSelection.classList.add('hidden');
         sessionSetup.classList.remove('hidden');
         changeLevelBtn.classList.remove('hidden');
+        sessionCountInput.focus(); // Focus on the session count input
     } else {
-        alert('Please enter a level between 1 and 12.');
+        alert('Please enter a level between 1 and 10.');
+    }
+});
+
+// Add event listener for Enter key on level input
+levelInput.addEventListener('keyup', (event) => {
+    if (event.key === 'Enter') {
+        saveLevelBtn.click();
     }
 });
 
@@ -59,6 +67,21 @@ changeLevelBtn.addEventListener('click', () => {
     resultSection.classList.add('hidden');
     changeLevelBtn.classList.add('hidden');
     levelInput.value = level;
+    levelInput.focus();
+});
+
+// Add this new function to focus on the session count input
+function focusSessionCountInput() {
+    sessionCountInput.focus();
+}
+
+// Modify the window load event listener
+window.addEventListener('load', () => {
+    if (!level) {
+        levelInput.focus();
+    } else {
+        focusSessionCountInput();
+    }
 });
 
 // Start session
@@ -71,6 +94,13 @@ startSessionBtn.addEventListener('click', () => {
         displayQuestion();
     } else {
         alert('Please enter a valid number of questions.');
+    }
+});
+
+// Update the session count validation and add Enter key support
+sessionCountInput.addEventListener('keyup', (event) => {
+    if (event.key === 'Enter') {
+        startSessionBtn.click();
     }
 });
 
@@ -169,6 +199,7 @@ restartSessionBtn.addEventListener('click', () => {
     sessionAnswers = [];
     resultSection.classList.add('hidden');
     sessionSetup.classList.remove('hidden');
+    focusSessionCountInput();
 });
 
 // Update parent summary
