@@ -44,3 +44,7 @@ input {
   font-size: 18px;
   color: #32cd32;
 }
+
+#change-level {
+  margin-top: 10px;
+}

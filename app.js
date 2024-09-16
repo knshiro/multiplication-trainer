@@ -16,6 +16,7 @@ const resultSection = document.getElementById('result-section');
 const resultSummary = document.getElementById('result-summary');
 const restartSessionBtn = document.getElementById('restart-session');
 const parentSummary = document.getElementById('parent-summary');
+const changeLevelBtn = document.getElementById('change-level');
 
 let level = localStorage.getItem('level') || null;
 let questions = [];
@@ -28,6 +29,7 @@ if (level) {
     currentLevelDisplay.textContent = `Current Level: ${level}`;
     levelSelection.classList.add('hidden');
     sessionSetup.classList.remove('hidden');
+    changeLevelBtn.classList.remove('hidden');
 }
 
 // Save level
@@ -38,9 +40,20 @@ saveLevelBtn.addEventListener('click', () => {
         currentLevelDisplay.textContent = `Current Level: ${level}`;
         levelSelection.classList.add('hidden');
         sessionSetup.classList.remove('hidden');
+        changeLevelBtn.classList.remove('hidden');
     } else {
         alert('Please enter a level between 1 and 12.');
     }
+});
+
+// Change level
+changeLevelBtn.addEventListener('click', () => {
+    levelSelection.classList.remove('hidden');
+    sessionSetup.classList.add('hidden');
+    quizSection.classList.add('hidden');
+    resultSection.classList.add('hidden');
+    changeLevelBtn.classList.add('hidden');
+    levelInput.value = level;
 });
 
 // Start session
