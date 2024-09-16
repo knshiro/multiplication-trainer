@@ -44,7 +44,7 @@ if (level) {
 // Update the level validation
 saveLevelBtn.addEventListener('click', () => {
     level = parseInt(levelInput.value);
-    if (level >= 1 && level <= 10) {
+    if (level >= 2 && level <= 10) {
         localStorage.setItem('level', level);
         currentLevelDisplay.textContent = `Current Level: ${level}`;
         levelSelection.classList.add('hidden');
@@ -52,7 +52,7 @@ saveLevelBtn.addEventListener('click', () => {
         changeLevelBtn.classList.remove('hidden');
         sessionCountInput.focus(); // Focus on the session count input
     } else {
-        alert('Please enter a level between 1 and 10.');
+        alert('Please enter a level between 2 and 10.');
     }
 });
 
@@ -72,6 +72,12 @@ changeLevelBtn.addEventListener('click', () => {
     changeLevelBtn.classList.add('hidden');
     levelInput.value = level;
     levelInput.focus();
+    
+    // Reset session variables
+    currentQuestion = 0;
+    correctAnswers = 0;
+    sessionAnswers = [];
+    questions = [];
 });
 
 // Add this new function to focus on the session count input
@@ -92,6 +98,11 @@ window.addEventListener('load', () => {
 startSessionBtn.addEventListener('click', () => {
     const count = parseInt(sessionCountInput.value);
     if (count > 0) {
+        // Reset session variables
+        currentQuestion = 0;
+        correctAnswers = 0;
+        sessionAnswers = [];
+        
         generateQuestions(count);
         sessionSetup.classList.add('hidden');
         quizSection.classList.remove('hidden');
@@ -112,8 +123,8 @@ sessionCountInput.addEventListener('keyup', (event) => {
 function generateQuestions(count) {
     questions = [];
     for (let i = 0; i < count; i++) {
-        const a = Math.floor(Math.random() * level) + 1;
-        const b = Math.floor(Math.random() * 9) + 1;
+        const a = Math.floor(Math.random() * (level - 1)) + 2; // This ensures a is between 2 and level
+        const b = Math.floor(Math.random() * 9) + 2; // This ensures b is between 2 and 10
         questions.push({ a, b });
     }
 }
