@@ -48,3 +48,32 @@ input {
 #change-level {
   margin-top: 10px;
 }
+
+#history-container {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.session-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+#session-details {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+#session-details ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#session-details li {
+    margin-bottom: 5px;
+}
