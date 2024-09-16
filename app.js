@@ -22,6 +22,10 @@ const backToChildModeBtn = document.getElementById('back-to-child-mode');
 const historyContainer = document.getElementById('history-container');
 const sessionDetailsContainer = document.getElementById('session-details');
 
+// Add these constants at the top of your file, after the element selections
+const SESSIONS_PER_PAGE = 5;
+let currentPage = 1;
+
 let level = localStorage.getItem('level') || null;
 let questions = [];
 let currentQuestion = 0;
@@ -213,20 +217,45 @@ function updateParentSummary() {
 }
 
 // Add new function to display session history
-function displaySessionHistory() {
-    historyContainer.innerHTML = '';
+function displaySessionHistory(append = false) {
+    if (!append) {
+        historyContainer.innerHTML = '';
+        sessionDetailsContainer.innerHTML = ''; // Clear previous details
+    }
 
-    sessionHistory.forEach((session, index) => {
+    // Sort sessions by date descending
+    const sortedSessions = sessionHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    const startIndex = (currentPage - 1) * SESSIONS_PER_PAGE;
+    const endIndex = startIndex + SESSIONS_PER_PAGE;
+    const sessionsToDisplay = sortedSessions.slice(startIndex, endIndex);
+
+    sessionsToDisplay.forEach((session, index) => {
         const sessionElement = document.createElement('div');
         sessionElement.classList.add('session-item');
         sessionElement.innerHTML = `
-            <h3>Session ${index + 1} - ${session.date}</h3>
+            <h3>Session ${sortedSessions.length - (startIndex + index)} - ${session.date}</h3>
             <p>Level: ${session.level}</p>
             <p>Score: ${session.correctAnswers}/${session.totalQuestions} (${session.percentage}%)</p>
-            <button class="view-details" data-index="${index}">View Details</button>
+            <button class="view-details" data-index="${startIndex + index}">View Details</button>
         `;
         historyContainer.appendChild(sessionElement);
     });
+
+    // Remove existing "Load More" button if it exists
+    const existingLoadMoreButton = document.getElementById('load-more');
+    if (existingLoadMoreButton) {
+        existingLoadMoreButton.remove();
+    }
+
+    // Add "Load More" button if there are more sessions
+    if (endIndex < sortedSessions.length) {
+        const loadMoreButton = document.createElement('button');
+        loadMoreButton.textContent = 'Load More';
+        loadMoreButton.id = 'load-more';
+        loadMoreButton.addEventListener('click', loadMoreSessions);
+        historyContainer.appendChild(loadMoreButton);
+    }
 
     // Add event listeners to view details buttons
     const viewDetailsButtons = document.querySelectorAll('.view-details');
@@ -238,32 +267,18 @@ function displaySessionHistory() {
     });
 }
 
-// Add new function to display session details
-function displaySessionDetails(index) {
-    const session = sessionHistory[index];
-    sessionDetailsContainer.innerHTML = `
-        <h3>Session Details</h3>
-        <p>Date: ${session.date}</p>
-        <p>Level: ${session.level}</p>
-        <p>Score: ${session.correctAnswers}/${session.totalQuestions} (${session.percentage}%)</p>
-        <h4>Questions and Answers:</h4>
-        <ul>
-            ${session.answers.map(answer => `
-                <li>
-                    ${answer.question} = ${answer.userAnswer}
-                    ${answer.isCorrect ? '✅' : `❌ (Correct: ${answer.correctAnswer})`}
-                </li>
-            `).join('')}
-        </ul>
-    `;
-    sessionDetailsContainer.classList.remove('hidden');
+// Add a new function to load more sessions
+function loadMoreSessions() {
+    currentPage++;
+    displaySessionHistory(true);
 }
 
-// Add event listener for the parent access button
+// Modify the parentAccessBtn event listener
 parentAccessBtn.addEventListener('click', () => {
     document.getElementById('parent-section').classList.add('hidden');
     document.getElementById('history-section').classList.remove('hidden');
-    displaySessionHistory();
+    currentPage = 1; // Reset to first page when accessing history
+    displaySessionHistory(false);
 });
 
 // Add event listener for the back to child mode button
@@ -279,3 +294,43 @@ document.addEventListener('keydown', (event) => {
         document.activeElement.click();
     }
 });
+
+// Modify the displaySessionDetails function
+function displaySessionDetails(index) {
+    const session = sessionHistory[index];
+    sessionDetailsContainer.innerHTML = `
+        <div class="overlay">
+            <div class="popup">
+                <h3>Session Details</h3>
+                <p>Date: ${session.date}</p>
+                <p>Level: ${session.level}</p>
+                <p>Score: ${session.correctAnswers}/${session.totalQuestions} (${session.percentage}%)</p>
+                <h4>Questions and Answers:</h4>
+                <ul>
+                    ${session.answers.map(answer => `
+                        <li>
+                            ${answer.question} = ${answer.userAnswer}
+                            ${answer.isCorrect ? '✅' : `❌ (Correct: ${answer.correctAnswer})`}
+                        </li>
+                    `).join('')}
+                </ul>
+                <button id="hide-details">Close</button>
+            </div>
+        </div>
+    `;
+    sessionDetailsContainer.classList.add('visible');
+
+    // Add event listener for the hide details button
+    document.getElementById('hide-details').addEventListener('click', hideSessionDetails);
+
+    // Add event listener to close the popup when clicking outside
+    sessionDetailsContainer.querySelector('.overlay').addEventListener('click', (e) => {
+        if (e.target.classList.contains('overlay')) {
+            hideSessionDetails();
+        }
+    });
+}
+
+function hideSessionDetails() {
+    sessionDetailsContainer.classList.remove('visible');
+}

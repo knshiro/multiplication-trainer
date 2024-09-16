@@ -64,8 +64,6 @@ input {
 }
 
 #history-container {
-    max-height: 300px;
-    overflow-y: auto;
     margin-bottom: 20px;
 }
 
@@ -78,11 +76,42 @@ input {
 }
 
 #session-details {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#session-details.visible {
+    display: flex;
+}
+
+#session-details .overlay {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#session-details .popup {
     background-color: #fff;
-    border: 1px solid #ddd;
     padding: 20px;
-    margin-top: 20px;
     border-radius: 10px;
+    max-width: 90%;
+    max-height: 90%;
+    overflow-y: auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+#session-details h3 {
+    margin-top: 0;
 }
 
 #session-details ul {
@@ -94,24 +123,15 @@ input {
     margin-bottom: 10px;
 }
 
-@media (max-width: 600px) {
-  body {
-    font-size: 14px;
-  }
+#hide-details {
+    margin-top: 20px;
+}
 
-  h1 {
-    font-size: 1.8em;
-  }
+#load-more {
+    margin-top: 10px;
+    background-color: #4169e1;
+}
 
-  h2 {
-    font-size: 1.3em;
-  }
-
-  button {
-    padding: 12px 24px;
-  }
-
-  input {
-    padding: 12px;
-  }
+#load-more:hover {
+    background-color: #3a5fcd;
 }
