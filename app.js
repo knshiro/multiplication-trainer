@@ -91,10 +91,18 @@ function displayQuestion() {
     questionCounter.textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
     answerInput.value = '';
     feedback.textContent = '';
+    answerInput.focus(); // Focus on the answer input
 }
 
-// Submit answer
-submitAnswerBtn.addEventListener('click', () => {
+// Add event listener for Enter key on answer input
+answerInput.addEventListener('keyup', (event) => {
+    if (event.key === 'Enter') {
+        submitAnswer();
+    }
+});
+
+// Submit answer function (extracted from the click event listener)
+function submitAnswer() {
     const q = questions[currentQuestion];
     const userAnswer = parseInt(answerInput.value);
     const correctAnswer = q.a * q.b;
@@ -103,9 +111,11 @@ submitAnswerBtn.addEventListener('click', () => {
         feedback.style.color = '#32cd32';
         feedback.textContent = 'Correct!';
         correctAnswers++;
+        setTimeout(moveToNextQuestion, 1000);
     } else {
         feedback.style.color = '#ff4500';
         feedback.textContent = `Incorrect. The correct answer is ${correctAnswer}.`;
+        setTimeout(moveToNextQuestion, 5000); // Increased to 5 seconds
     }
 
     sessionAnswers.push({
@@ -114,14 +124,19 @@ submitAnswerBtn.addEventListener('click', () => {
         correctAnswer,
         isCorrect: userAnswer === correctAnswer
     });
+}
 
+function moveToNextQuestion() {
     currentQuestion++;
     if (currentQuestion < questions.length) {
-        setTimeout(displayQuestion, 1000);
+        displayQuestion();
     } else {
-        setTimeout(showResults, 1000);
+        showResults();
     }
-});
+}
+
+// Update submit answer button event listener
+submitAnswerBtn.addEventListener('click', submitAnswer);
 
 // Show results
 function showResults() {
@@ -225,4 +240,11 @@ backToChildModeBtn.addEventListener('click', () => {
     document.getElementById('history-section').classList.add('hidden');
     document.getElementById('session-details').classList.add('hidden');
     document.getElementById('parent-section').classList.remove('hidden');
+});
+
+// Add keyboard navigation for buttons
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' && document.activeElement.tagName === 'BUTTON') {
+        document.activeElement.click();
+    }
 });
