@@ -1,0 +1,46 @@
+body {
+  background-color: #f0f8ff;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  padding: 20px;
+}
+
+h1 {
+  color: #ff6347;
+}
+
+.section {
+  margin: 20px 0;
+}
+
+.hidden {
+  display: none;
+}
+
+button {
+  background-color: #ffb6c1;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #ffa07a;
+}
+
+input {
+  padding: 10px;
+  font-size: 16px;
+}
+
+#feedback {
+  margin-top: 10px;
+  font-size: 18px;
+  color: #32cd32;
+}
