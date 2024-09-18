@@ -34,14 +34,6 @@ let correctAnswers = 0;
 let sessionAnswers = [];
 let sessionHistory = JSON.parse(localStorage.getItem('sessionHistory')) || [];
 
-// Display current level
-if (level) {
-    currentLevelDisplay.textContent = `${translations[currentLanguage].level}: ${level}`;
-    levelSelection.classList.add('hidden');
-    sessionSetup.classList.remove('hidden');
-    changeLevelBtn.classList.remove('hidden');
-}
-
 // Update the level validation
 saveLevelBtn.addEventListener('click', () => {
     level = parseInt(levelInput.value);
@@ -91,12 +83,38 @@ window.addEventListener('load', async () => {
     await setLanguage(detectLanguage());
     languageSelect.value = currentLanguage;
     
+    // Update UI after translations are loaded
+    updateUI();
+    
     if (!level) {
         levelInput.focus();
     } else {
         focusSessionCountInput();
     }
 });
+
+// Add this new function to update UI elements that depend on translations
+function updateUI() {
+    if (level) {
+        currentLevelDisplay.textContent = `${translations[currentLanguage].level}: ${level}`;
+        levelSelection.classList.add('hidden');
+        sessionSetup.classList.remove('hidden');
+        changeLevelBtn.classList.remove('hidden');
+    }
+    
+    // Update other UI elements that depend on translations
+    updateParentSummary();
+}
+
+// Modify the updateParentSummary function
+function updateParentSummary() {
+    if (sessionHistory.length > 0) {
+        const lastSession = sessionHistory[sessionHistory.length - 1];
+        parentSummary.textContent = `${translations[currentLanguage].lastSession} ${lastSession.correctAnswers} ${translations[currentLanguage].outOf} ${lastSession.totalQuestions} ${translations[currentLanguage].correct2} (${lastSession.percentage}%).`;
+    } else {
+        parentSummary.textContent = translations[currentLanguage].noSessionsYet;
+    }
+}
 
 // Start session
 startSessionBtn.addEventListener('click', () => {
@@ -220,16 +238,6 @@ restartSessionBtn.addEventListener('click', () => {
     sessionSetup.classList.remove('hidden');
     focusSessionCountInput();
 });
-
-// Update parent summary
-function updateParentSummary() {
-    if (sessionHistory.length > 0) {
-        const lastSession = sessionHistory[sessionHistory.length - 1];
-        parentSummary.textContent = `${translations[currentLanguage].lastSession} ${lastSession.correctAnswers} ${translations[currentLanguage].outOf} ${lastSession.totalQuestions} ${translations[currentLanguage].correct2} (${lastSession.percentage}%).`;
-    } else {
-        parentSummary.textContent = translations[currentLanguage].noSessionsYet;
-    }
-}
 
 // Add new function to display session history
 function displaySessionHistory(append = false) {
