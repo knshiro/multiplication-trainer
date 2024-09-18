@@ -1,11 +1,15 @@
-const cacheName = 'multiplication-trainer-v1';
+const cacheName = 'multiplication-trainer-v2';
 const assets = [
     '.',
     'index.html',
     'styles.css',
     'app.js',
+    'translations.js',
     'manifest.json',
-    'icon.png'
+    'icon.png',
+    'translations/en.json',
+    'translations/fr.json',
+    'translations/ja.json'
 ];
 
 self.addEventListener('install', event => {

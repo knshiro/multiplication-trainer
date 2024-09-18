@@ -7,45 +7,53 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icon.png" type="image/png">
+    <script src="translations.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>Multiplication Trainer</h1>
+        <div id="language-switcher">
+            <select id="language-select">
+                <option value="en">🇬🇧 EN</option>
+                <option value="fr">🇫🇷 FR</option>
+                <option value="ja">🇯🇵 JA</option>
+            </select>
+        </div>
+        <h1 data-i18n="title">Multiplication Trainer</h1>
         <div id="level-selection" class="section">
-            <h2>Choose Your Level</h2>
-            <input type="number" id="level-input" min="2" max="10" placeholder="Enter level (2-10)">
-            <button id="save-level">Save Level</button>
+            <h2 data-i18n="maxMultiplication">Max Multiplication</h2>
+            <input type="number" id="level-input" min="2" max="10" data-i18n-placeholder="enterMaxNumber">
+            <button id="save-level" data-i18n="saveLevel">Save Level</button>
         </div>
         <div id="session-setup" class="section hidden">
-            <h2>Session Setup</h2>
+            <h2 data-i18n="sessionSetup">Session Setup</h2>
             <input type="number" id="session-count" min="1" placeholder="Number of questions">
-            <button id="start-session">Start Session</button>
+            <button id="start-session" data-i18n="startSession">Start Session</button>
         </div>
         <div id="quiz-section" class="section hidden">
             <h2 id="question-counter"></h2>
             <div id="question-display"></div>
             <input type="number" id="answer-input" placeholder="Your answer">
-            <button id="submit-answer">Submit Answer</button>
+            <button id="submit-answer" data-i18n="submitAnswer">Submit Answer</button>
             <div id="feedback"></div>
         </div>
         <div id="result-section" class="section hidden">
-            <h2>Session Complete!</h2>
+            <h2 data-i18n="sessionComplete">Session Complete!</h2>
             <p id="result-summary"></p>
-            <button id="restart-session">Start New Session</button>
+            <button id="restart-session" data-i18n="startNewSession">Start New Session</button>
         </div>
         <div id="parent-section" class="section">
-            <h2>Session Summary</h2>
-            <p id="parent-summary">No sessions completed yet.</p>
-            <button id="parent-access">Parent Access</button>
+            <h2 data-i18n="sessionSummary">Session Summary</h2>
+            <p id="parent-summary" data-i18n-placeholder="noSessionsYet">No sessions completed yet.</p>
+            <button id="parent-access" data-i18n="parentAccess">Parent Access</button>
         </div>
         <div id="history-section" class="section hidden">
-            <h2>Session History</h2>
+            <h2 data-i18n="sessionHistory">Session History</h2>
             <div id="history-container"></div>
             <div id="session-details" class="hidden"></div>
-            <button id="back-to-child-mode">Back to Child Mode</button>
+            <button id="back-to-child-mode" data-i18n="backToChildMode">Back to Child Mode</button>
         </div>
         <p id="current-level"></p>
-        <button id="change-level" class="hidden">Change Level</button>
+        <button id="change-level" class="hidden" data-i18n="changeLevel">Change Level</button>
     </div>
     <script src="app.js"></script>
 </body>

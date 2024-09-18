@@ -21,6 +21,7 @@ const parentAccessBtn = document.getElementById('parent-access');
 const backToChildModeBtn = document.getElementById('back-to-child-mode');
 const historyContainer = document.getElementById('history-container');
 const sessionDetailsContainer = document.getElementById('session-details');
+const languageSelect = document.getElementById('language-select');
 
 // Add these constants at the top of your file, after the element selections
 const SESSIONS_PER_PAGE = 5;
@@ -35,7 +36,7 @@ let sessionHistory = JSON.parse(localStorage.getItem('sessionHistory')) || [];
 
 // Display current level
 if (level) {
-    currentLevelDisplay.textContent = `Current Level: ${level}`;
+    currentLevelDisplay.textContent = `${translations[currentLanguage].level}: ${level}`;
     levelSelection.classList.add('hidden');
     sessionSetup.classList.remove('hidden');
     changeLevelBtn.classList.remove('hidden');
@@ -46,13 +47,13 @@ saveLevelBtn.addEventListener('click', () => {
     level = parseInt(levelInput.value);
     if (level >= 2 && level <= 10) {
         localStorage.setItem('level', level);
-        currentLevelDisplay.textContent = `Current Level: ${level}`;
+        currentLevelDisplay.textContent = `${translations[currentLanguage].level}: ${level}`;
         levelSelection.classList.add('hidden');
         sessionSetup.classList.remove('hidden');
         changeLevelBtn.classList.remove('hidden');
         sessionCountInput.focus(); // Focus on the session count input
     } else {
-        alert('Please enter a level between 2 and 10.');
+        alert(translations[currentLanguage].enterLevel);
     }
 });
 
@@ -86,7 +87,10 @@ function focusSessionCountInput() {
 }
 
 // Modify the window load event listener
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
+    await setLanguage(detectLanguage());
+    languageSelect.value = currentLanguage;
+    
     if (!level) {
         levelInput.focus();
     } else {
@@ -108,7 +112,7 @@ startSessionBtn.addEventListener('click', () => {
         quizSection.classList.remove('hidden');
         displayQuestion();
     } else {
-        alert('Please enter a valid number of questions.');
+        alert(translations[currentLanguage].enterLevel);
     }
 });
 
@@ -133,7 +137,7 @@ function generateQuestions(count) {
 function displayQuestion() {
     const q = questions[currentQuestion];
     questionDisplay.textContent = `${q.a} x ${q.b} = ?`;
-    questionCounter.textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+    questionCounter.textContent = `${translations[currentLanguage].question} ${currentQuestion + 1} ${translations[currentLanguage].outOf} ${questions.length}`;
     answerInput.value = '';
     feedback.textContent = '';
     answerInput.focus(); // Focus on the answer input
@@ -154,12 +158,12 @@ function submitAnswer() {
 
     if (userAnswer === correctAnswer) {
         feedback.style.color = '#32cd32';
-        feedback.textContent = 'Correct!';
+        feedback.textContent = translations[currentLanguage].correct;
         correctAnswers++;
         setTimeout(moveToNextQuestion, 1000);
     } else {
         feedback.style.color = '#ff4500';
-        feedback.textContent = `Incorrect. The correct answer is ${correctAnswer}.`;
+        feedback.textContent = `${translations[currentLanguage].incorrect} ${correctAnswer}.`;
         setTimeout(moveToNextQuestion, 5000); // Increased to 5 seconds
     }
 
@@ -189,7 +193,7 @@ function showResults() {
     resultSection.classList.remove('hidden');
     const totalQuestions = questions.length;
     const percentage = ((correctAnswers / totalQuestions) * 100).toFixed(2);
-    resultSummary.textContent = `You got ${correctAnswers} out of ${totalQuestions} correct (${percentage}%).`;
+    resultSummary.textContent = `${translations[currentLanguage].sessionComplete} ${correctAnswers} ${translations[currentLanguage].outOf} ${totalQuestions} ${translations[currentLanguage].correct2} (${percentage}%).`;
 
     // Save session data
     const sessionData = {
@@ -221,9 +225,9 @@ restartSessionBtn.addEventListener('click', () => {
 function updateParentSummary() {
     if (sessionHistory.length > 0) {
         const lastSession = sessionHistory[sessionHistory.length - 1];
-        parentSummary.textContent = `Last session: ${lastSession.correctAnswers} out of ${lastSession.totalQuestions} correct (${lastSession.percentage}%).`;
+        parentSummary.textContent = `${translations[currentLanguage].lastSession} ${lastSession.correctAnswers} ${translations[currentLanguage].outOf} ${lastSession.totalQuestions} ${translations[currentLanguage].correct2} (${lastSession.percentage}%).`;
     } else {
-        parentSummary.textContent = 'No sessions completed yet.';
+        parentSummary.textContent = translations[currentLanguage].noSessionsYet;
     }
 }
 
@@ -245,10 +249,10 @@ function displaySessionHistory(append = false) {
         const sessionElement = document.createElement('div');
         sessionElement.classList.add('session-item');
         sessionElement.innerHTML = `
-            <h3>Session ${sortedSessions.length - (startIndex + index)} - ${session.date}</h3>
-            <p>Level: ${session.level}</p>
-            <p>Score: ${session.correctAnswers}/${session.totalQuestions} (${session.percentage}%)</p>
-            <button class="view-details" data-index="${startIndex + index}">View Details</button>
+            <h3>${translations[currentLanguage].sessionHistory} ${sortedSessions.length - (startIndex + index)} - ${session.date}</h3>
+            <p>${translations[currentLanguage].level} ${session.level}</p>
+            <p>${translations[currentLanguage].score} ${session.correctAnswers}/${session.totalQuestions} (${session.percentage}%)</p>
+            <button class="view-details" data-index="${startIndex + index}" data-i18n="viewDetails">${translations[currentLanguage].viewDetails}</button>
         `;
         historyContainer.appendChild(sessionElement);
     });
@@ -262,7 +266,7 @@ function displaySessionHistory(append = false) {
     // Add "Load More" button if there are more sessions
     if (endIndex < sortedSessions.length) {
         const loadMoreButton = document.createElement('button');
-        loadMoreButton.textContent = 'Load More';
+        loadMoreButton.textContent = translations[currentLanguage].loadMore;
         loadMoreButton.id = 'load-more';
         loadMoreButton.addEventListener('click', loadMoreSessions);
         historyContainer.appendChild(loadMoreButton);
@@ -312,24 +316,25 @@ function displaySessionDetails(index) {
     sessionDetailsContainer.innerHTML = `
         <div class="overlay">
             <div class="popup">
-                <h3>Session Details</h3>
-                <p>Date: ${session.date}</p>
-                <p>Level: ${session.level}</p>
-                <p>Score: ${session.correctAnswers}/${session.totalQuestions} (${session.percentage}%)</p>
-                <h4>Questions and Answers:</h4>
+                <h3 data-i18n="sessionHistory">${translations[currentLanguage].sessionHistory}</h3>
+                <p>${translations[currentLanguage].date} ${session.date}</p>
+                <p>${translations[currentLanguage].level} ${session.level}</p>
+                <p>${translations[currentLanguage].score} ${session.correctAnswers}/${session.totalQuestions} (${session.percentage}%)</p>
+                <h4 data-i18n="questionsAndAnswers">${translations[currentLanguage].questionsAndAnswers}</h4>
                 <ul>
                     ${session.answers.map(answer => `
                         <li>
                             ${answer.question} = ${answer.userAnswer}
-                            ${answer.isCorrect ? '✅' : `❌ (Correct: ${answer.correctAnswer})`}
+                            ${answer.isCorrect ? '✅' : `❌ (${translations[currentLanguage].correct}: ${answer.correctAnswer})`}
                         </li>
                     `).join('')}
                 </ul>
-                <button id="hide-details">Close</button>
+                <button id="hide-details" data-i18n="close">${translations[currentLanguage].close}</button>
             </div>
         </div>
     `;
     sessionDetailsContainer.classList.add('visible');
+    translatePage();
 
     // Add event listener for the hide details button
     document.getElementById('hide-details').addEventListener('click', hideSessionDetails);
@@ -345,3 +350,8 @@ function displaySessionDetails(index) {
 function hideSessionDetails() {
     sessionDetailsContainer.classList.remove('visible');
 }
+
+// Add this after the languageSelect definition
+languageSelect.addEventListener('change', (event) => {
+    setLanguage(event.target.value);
+});
